@@ -12,5 +12,6 @@
     ],
     "support": {
         "issues": "https://github.com/schwerpunkt-digital/paragraph_orphans/issues"
-    }
+    },
+    "require": {}
 }
