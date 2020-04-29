@@ -1,8 +1,8 @@
 {
     "name": "schwerpunkt/paragraph_orphans",
-    "description": "A drupal module providing a service to detect orphaned/unused paragraph entities. Note that this module does not handle entity revisions.",
+    "description": "Provides a service to detect orphaned/unused paragraph entities.",
     "type": "drupal-module",
-    "homepage": "https://github.com/schwerpunkt-digital/paragraph_orphans",
+    "license": "MIT",
     "authors": [
         {
             "name": "Martin Wittmann (dawitti)",
@@ -12,7 +12,5 @@
     ],
     "support": {
         "issues": "https://github.com/schwerpunkt-digital/paragraph_orphans/issues"
-    },
-    "license": "MIT",
-    "minimum-stability": "stable"
+    }
 }
