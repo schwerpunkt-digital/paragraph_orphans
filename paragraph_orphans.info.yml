@@ -1,0 +1,6 @@
+name: 'Paragraph orphans'
+type: module
+description: 'Provides a service detecting orphaned paragraph entites.'
+core: 8.x
+package: 'Paragraphs'
+

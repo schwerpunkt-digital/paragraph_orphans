@@ -1,0 +1,4 @@
+services:
+  paragraph_orphans.detection:
+    class: Drupal\paragraph_orphans\OrphansDetectionService
+    arguments: ['entityfield.manager']
