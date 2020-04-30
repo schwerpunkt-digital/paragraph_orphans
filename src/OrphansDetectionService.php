@@ -2,20 +2,21 @@
 
 namespace Drupal\paragraph_orphans;
 
+ 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\paragraphs\ParagraphInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 
 
 class OrphansDetectionService {
-  
+
   private $entityFieldManager = null;
 
-  public __construct(EntityFieldManagerInterface $entityFieldManager) {
+  public function __construct(EntityFieldManagerInterface $entityFieldManager) {
     $this->entityFieldManager = $entityFieldManager;
   }
 
-  protected getParagraphFieldsOfEntity(EntityInterface $entity) {
+  protected function getParagraphFieldsOfEntity(EntityInterface $entity) {
     $entityTypeId = $entity->getEntityTypeId();
     $entityBundle = $entity->bundle();
     /** @var $entityFieldManager \Drupal\Core\Entity\EntityFieldManagerInterface */
@@ -26,24 +27,36 @@ class OrphansDetectionService {
     });
   }
 
-  public paragraphIsOrphan(ParagraphInterface $paragraph) {
-    /** @var $parent Paragraph */
+  public function paragraphIsOrphan(ParagraphInterface $paragraph) {
+    /** @var $parent ParagraphInterface */
     $parent = $paragraph->getParentEntity();
-    $query = \Drupal::entityQuery('paragraph');
+    $parentEntityType = $parent->getEntityType();
+    $parentKeys = $parentEntityType->getKeys();
+    $query = \Drupal::entityQuery($parent->getEntityTypeId());
     $or_group = $query->orConditionGroup();
-    foreach ($this->getParagraphFieldsOfEntity($parent) as $field) {
+    $paragraph_fields = $this->getParagraphFieldsOfEntity($parent);
+    foreach ($paragraph_fields as $field) {
       $or_group->condition($field->getName() . '.target_id', $paragraph->id());
     }
     $result = $query
       ->condition($or_group)
+      ->condition($parentKeys['id'], $parent->id())
       ->execute();
 
     if (count($result) > 0) {
-      // $paragraph is referenced by its parent. Check the parent.
-      return $this->paragraphIsOrphan($parent);
+      if ($parent->getEntityTypeId() == 'paragraph') {
+        // The paragraph is referenced by another paragraph. Check if the parent
+        // is referenced.
+        return $this->paragraphIsOrphan($parent);
+      }
+      else {
+        // The paragraph is referenced by a non-paragraph entity. Its no orphan.
+        return FALSE;
+      }
     }
     else {
-      return FALSE;
+      // We did not find any references to $paragraph. This is an orphan.
+      return TRUE;
     }
   }
 }
